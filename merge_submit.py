@@ -30,8 +30,9 @@ df, *_ = dts.read_dataset('test_data_no_labels_sent.csv', train_data=False)
 
 df.insert(2, 'prev_token', df['token'].shift(1))
 
-print(df)
+# print(df)
 
+# в этом каталоге лежат лучшие предсказания нескольких моделей (опыты проводил на 5 моделях)
 files = glob(r'.\compare\*.csv')
 merge_cols = []
 for file in files:
@@ -53,6 +54,7 @@ df['tag'] = df.progress_apply(lambda row: merge_tags(row[merge_cols].to_list()),
 tokens = df['token'].str.replace('-u-ell', 'uel').to_list()
 tags = df['tag'].to_list()
 
+# Формирование списка имен с их тегами и множества слов, начинающихся с маленькой буквы
 token_tag = []
 token_outs = ('American', 'Jack')
 lower_words = set()
@@ -91,6 +93,9 @@ for idx, token in enumerate(tokens.copy()):
             token in name_tokens and token[0].isupper() and token in common_labels):
         tags[idx] = common_labels[token]
 
+# выбиваются из алгоритма обработки
+for idx in (11342, 17353):
+    tags[idx] = 'O'
 
 df['tag'] = convert_bio_tags(tags)
 
